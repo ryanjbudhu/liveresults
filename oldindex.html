@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NJIT Halloween 5k</title>
+  <link type="text/css" rel="stylesheet" media="all" href="style.css">
+  <script src="https://js.pusher.com/5.0/pusher.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+  <script type="text/javascript">
+    // Enable pusher logging - don't include this in production
+    /*Pusher.log = function(message) {
+      if (window.console && window.console.log) {
+        window.console.log(message);
+      }
+    };*/
+
+    var pusher = new Pusher('27858f89c0147542f87e',{
+			cluster: 'us2',
+			forceTLS: true
+		});
+    var channel = pusher.subscribe('results_channel');
+    channel.bind('results', function(data) {
+       
+		var obj = jQuery.parseJSON(data.message);
+		var htmlStr =''; 
+		var athleteNum = 0;
+	   
+		// count elements in obj
+		for( var key in obj ) {
+			if( obj.hasOwnProperty(key) ) {
+				athleteNum++;
+			}
+		}
+		console.log(athleteNum);
+		
+		//Update running Time
+		var runningTime = obj[0];
+		$('#runningTime').text(runningTime);
+		
+		// update page with event name
+		var eventName = obj[1][1];
+		$('#eventName').text(eventName);
+		var eventWind = obj[1][2];
+		$('#eventWind').text(eventWind);
+		var eventNumber = obj[1][3];
+		$('#eventNumber').text(eventNumber);
+		var eventRound = obj[1][4];
+		$('#eventRound').text(eventRound);
+		var eventHeat = obj[1][5];
+		$('#eventHeat').text(eventHeat);
+
+
+		
+		// start building html for results table
+		htmlStr = htmlStr + '<table id="results">';
+		
+		// results table header
+		htmlStr = htmlStr + '<tr>'+
+			'<th class="place">Place</th>'+
+			'<th class="lane">Hip</th>'+
+			'<th class="number">#</th>'+
+			'<th class="name">Name</th>'+
+			'<th class="team">Team</th>'+
+			'<th class="time">Final</th>'+
+			'<th class="delta">Delta</th>'+
+			'<th class="cum">Cum</th>'+
+			'<th class="last">Last</th>'+
+			'<th class="laps">Laps</th></tr>';
+				 
+		for(var i=2;i<athleteNum;i++){ 
+			/* 
+			Not sure why this is necessary...
+			A seemingly random number of results with ',' are being sent. 
+			Come events have a trailing result line with all elements undefined 
+			*/
+			if(obj[i][2]==',' || obj[i][2] === undefined){
+				
+			}
+				else    
+			{
+				htmlStr = htmlStr + "<tr>";                
+					htmlStr = htmlStr + '<td class="place">' + obj[i][0] + "</td>";
+					htmlStr = htmlStr + '<td class="lane">' + obj[i][1] + "</td>";
+					htmlStr = htmlStr + '<td class="number">' + obj[i][2] + "</td>";
+					htmlStr = htmlStr + '<td class="name">' + obj[i][3] + "</td>";
+					htmlStr = htmlStr + '<td class="team">' + obj[i][4] + "</td>";
+					htmlStr = htmlStr + '<td class="time">' + obj[i][5] + "</td>";
+					htmlStr = htmlStr + '<td class="delta">' + obj[i][6] + "</td>";
+					htmlStr = htmlStr + '<td class="cum">' + obj[i][7] + "</td>";
+					htmlStr = htmlStr + '<td class="last">' + obj[i][8] + "</td>";
+					htmlStr = htmlStr + '<td class="laps">' + obj[i][9] + "</td>";
+				htmlStr = htmlStr + "</tr>";  
+			}
+		}
+		htmlStr = htmlStr + '<table>';
+		
+		// update page with generated table
+		$('#results').html(htmlStr);
+	});
+	/*var x = 0;
+	var s = 0;
+	var m = 59;
+	var h = 0;
+	formattedTime = "00:00:00.00";
+	setInterval(function () {
+		$('#runningTime').text(formattedTime);
+		s = (s*10 + 1)/10;
+		if(s>=60){
+			s=0;
+			m+=1;
+			if(m==60){
+				m=0;
+				h+=1;
+			}
+		}
+		formattedTime = pad(h,2)+":"+pad(m,2)+":"+pad(s.toFixed(2),5);
+	}, 1);
+	
+	function pad(num,size) {
+		var s = num+"";
+		while (s.length < size) s = "0" + s;
+		return s;
+	}*/
+  </script>
+</head>
+
+
+
+<body>
+    <div id="container">
+        	<h4 id="venue">NJIT Halloween 5k | NJIT | Newark, New Jersey</h4>
+		<p class="runningTime" style="text-align: right; font-size: 40px;" id="runningTime"></p>
+        <h3 id="eventName">No Event Selected</h3>
+        <h5 id="details">
+            Event: <span id="eventNumber">0</span>
+            Round: <span id="eventRound">0</span>
+            Heat: <span id="eventHeat">0</span>
+            Wind: <span id="eventWind">0</span>
+        </h5>
+        
+        <div id="results"></div>
+        <div id="test"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="results"></div>
+	</body>
+	<script>
+		var files = [
+			"1_Women 5k Run CC.json",
+			"1_Women5kRunCC.json"
+		];
+		function addLinks(files) {
+			let res = document.getElementById('results');
+			var output = "";
+			for (var i=0;i<files.length;i++) {
+				output += "<a href='./listRaces.php?date=09-11-2019&racename="+files[i]+"'>"+files[i]+"</a></br>";
+			}
+		}
+		res.innerHTML = output;
+	</script>
+</html>
